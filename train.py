@@ -3,14 +3,16 @@ from torch import nn, optim
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
+import auxil
 from cnn import CNN
 
 
-def run_training(device: torch.device) -> None:
+def run_training(loss: str = "cross_entropy", epochs: int = 5) -> None:
     """Load MNIST data, and run the training.
 
     Args:
-        device (torch.device): Device to run training on (e.g. GPU or CPU)
+        loss (str): Loss function to use, either "cross_entropy" or "mse"
+        epochs (int): Number of epochs to train
 
     """
     # Transforms data to PyTorch tensors and normalizes it
@@ -32,43 +34,29 @@ def run_training(device: torch.device) -> None:
     test_dataset = datasets.MNIST("./data", train=False, transform=transform)
     test_loader = DataLoader(test_dataset, batch_size=1000)
 
-    # Load the model, loss function and optimizer
-    model = CNN().to(device)
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    if loss == "cross_entropy":
+        criterion = nn.CrossEntropyLoss()
+    elif loss == "mse":
+        criterion = nn.MSELoss()
 
-    train(
-        epochs=5,
-        model=model,
-        device=device,
-        train_loader=train_loader,
-        test_loader=test_loader,
-        criterion=criterion,
-        optimizer=optimizer,
-    )
+    train(epochs, train_loader, test_loader, criterion)
 
 
-def train(
-    epochs: int,
-    model: CNN,
-    device: torch.device,
-    train_loader: DataLoader,
-    test_loader: DataLoader,
-    criterion: nn.Module,
-    optimizer: torch.optim.Optimizer,
-) -> None:
+def train(epochs: int, train_loader: DataLoader, test_loader: DataLoader, criterion: nn.Module) -> None:
     """Train CNN for a number of epochs.
 
     Args:
         epochs (int): Numboer of epochs
-        model (CNN): Instance of CNN model to train
-        device (torch.device): Device to run training on (e.g. GPU or CPU)
         train_loader (DataLoader): Object that loads training data in batches
         test_loader (DataLoader): Object that load test data in batches
         criterion (nn.Module): Loss function
-        optimizer (torch.optim.Optimizer): Optimizer to update model weights
 
     """
+    # Setup model and Adam optimizer
+    device = auxil.get_device()
+    model = CNN().to(device)
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
+
     # Epoch = complete pass through training data
     for epoch in range(epochs):
         print(f"Training epoch: {epoch + 1}")
@@ -79,6 +67,7 @@ def train(
         total = 0
 
         # Run through 60,000/64 = 938 batches
+        # Each itteration of a DataLoader returns a batch of data and targets
         for batch_idx, (data, targets) in enumerate(train_loader):
             # Move data to device (GPU or CPU)
             data, targets = data.to(device), targets.to(device)
@@ -111,7 +100,7 @@ def train(
             correct += result_bool.sum().item()
 
             # Print stat every 100 batches
-            # Avg loss for a batch is a weird meassurement here, since the model changes throught a batch,
+            # Avg loss for a batch is a weird meassurement here, since the model changes weights through a batch,
             # but correlates well with accuracy
             if batch_idx % 100 == 0 and batch_idx != 0:
                 avg_loss = running_loss / (batch_idx + 1)
@@ -162,7 +151,3 @@ def save_model(model: CNN) -> None:
     """
     torch.save(model.state_dict(), "mnist_cnn_state_dict.pth")
     print("Model state dict saved as 'mnist_cnn_state_dict.pth'")
-
-
-if __name__ == "__main__":
-    run_training()

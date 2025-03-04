@@ -1,14 +1,16 @@
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
+from torch import nn
+from torch.nn import functional as F
 
 
 class CNN(nn.Module):
-    def __init__(self):
-        """Predicts numbers from images sized 28x28 pixels.
+    """CNN class that predicts numbers from images sized 28x28 pixels.
 
-        NN architecture stolen from https://colab.research.google.com/github/trekhleb/machine-learning-experiments/blob/master/experiments/digits_recognition_cnn/digits_recognition_cnn.ipynb#scrollTo=xC1stUA99j0V
-        """
+    NN architecture taken from https://colab.research.google.com/github/trekhleb/machine-learning-experiments/blob/master/experiments/digits_recognition_cnn/digits_recognition_cnn.ipynb#scrollTo=xC1stUA99j0V
+    """
+
+    def __init__(self) -> None:
+        """Initialize the CNN model."""
         super().__init__()
 
         self.conv1 = nn.Conv2d(1, 8, kernel_size=5)
@@ -17,12 +19,13 @@ class CNN(nn.Module):
         self.fc2 = nn.Linear(128, 10)
         self.dropout = nn.Dropout(0.2)
 
-    def forward(self, input):
+    def forward(self, inp: torch.Tensor) -> torch.Tensor:
+        """Forward pass of the CNN model."""
         # Dimensions = (barth size, channels, height, width)
         # Here assuming grey scale images, so input channels = 1
         # l1 shape: (N, 1, 28, 28) -> (N, 8, 24, 24)
         # d_out = (d_in - kernel_size) / stride + 1 when dilation 1 and padding 0
-        l1 = F.relu(self.conv1(input))
+        l1 = F.relu(self.conv1(inp))
         # l2 shape: (N, 8, 24, 24) -> (N, 8, 12, 12)
         l2 = F.max_pool2d(l1, (2, 2))
         # l3 shape: (N, 8, 12, 12) -> (N, 16, 8, 8)
@@ -37,8 +40,3 @@ class CNN(nn.Module):
         l7 = self.dropout(l6)
         # l8 shape: (N, 128) -> (N, 10)
         return self.fc2(l7)
-
-
-if __name__ == "__main__":
-    net = CNN()
-    print(net)

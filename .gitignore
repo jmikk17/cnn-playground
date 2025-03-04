@@ -1,4 +1,3 @@
 *.pyc
 data/
-mnist_cnn_state_dict.pth
 test_img/

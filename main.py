@@ -1,4 +1,5 @@
 import argparse
+
 import cv2
 
 import auxil
@@ -6,7 +7,8 @@ import formatting
 import train
 
 
-def main():
+def main() -> None:
+    """Train or run the CNN model."""
     parser = argparse.ArgumentParser(description="CNN for predicting numbers")
 
     group = parser.add_mutually_exclusive_group(required=True)
@@ -15,7 +17,7 @@ def main():
         "-t",
         "--train",
         action="store_true",
-        help="Run training",
+        help="Run training of CNN model",
     )
 
     group.add_argument(
@@ -23,16 +25,15 @@ def main():
         "--predict",
         type=str,
         metavar="INPUT_STRING",
-        help="Run prediction",
+        help="Run prediction of image file",
     )
 
     args = parser.parse_args()
 
-    device = auxil.get_device()
-
     if args.train:
-        train.run_training(device)
+        train.run_training()
     elif args.predict:
+        device = auxil.get_device()
         img_list, pos, result_img = formatting.extract_digits(args.predict, show_steps=True)
         model = auxil.load_model_for_prediction()
         for i, img in enumerate(img_list):
