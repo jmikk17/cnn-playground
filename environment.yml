@@ -1,0 +1,12 @@
+name: cnn-test
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pytorch=1.13.1
+  - torchvision=0.14.1
+  - opencv=4.5
+  - matplotlib=3.5.1
+  - numpy=1.21.5
