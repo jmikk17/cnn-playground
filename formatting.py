@@ -64,7 +64,7 @@ def extract_digits(image_path: str, show_steps: bool = True, adaptive_threshold:
 
         resized_digit = cv2.resize(square_digit, (28, 28), interpolation=cv2.INTER_AREA)
 
-        # mnist does this
+        # MNIST does this, so we should as well
         normalized_digit = resized_digit.astype("float32") / 255.0
 
         digits.append(normalized_digit)
@@ -74,7 +74,6 @@ def extract_digits(image_path: str, show_steps: bool = True, adaptive_threshold:
             cv2.rectangle(result_image, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
     if show_steps:
-        # TODO plotting wrong
         fig, ax = plt.subplots(1, 2, figsize=(12, 6))
         ax[0].set_title("Detected Digits")
         ax[0].imshow(cv2.cvtColor(result_image, cv2.COLOR_BGR2RGB))
@@ -86,4 +85,13 @@ def extract_digits(image_path: str, show_steps: bool = True, adaptive_threshold:
 
         plt.show()
 
-    return normalized_digit
+    # plot all found digits
+    if show_steps:
+        fig, ax = plt.subplots(1, len(digits), figsize=(12, 6))
+        for i, digit in enumerate(digits):
+            ax[i].imshow(digit, cmap="gray")
+            ax[i].axis("off")
+
+        plt.show()
+
+    return digits, pos, result_image

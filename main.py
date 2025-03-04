@@ -1,11 +1,13 @@
 import argparse
+import cv2
 
+import auxil
 import formatting
+import train
 
 
 def main():
     parser = argparse.ArgumentParser(description="CNN for predicting numbers")
-    parser.add_argument("image_path", help="Path to the input image file")
 
     group = parser.add_mutually_exclusive_group(required=True)
 
@@ -26,10 +28,19 @@ def main():
 
     args = parser.parse_args()
 
+    device = auxil.get_device()
+
     if args.train:
-        pass
+        train.run_training(device)
     elif args.predict:
-        img_list = formatting.extract_digits(args.image_path, show_steps=True)
+        img_list, pos, result_img = formatting.extract_digits(args.predict, show_steps=True)
+        model = auxil.load_model_for_prediction()
+        for i, img in enumerate(img_list):
+            pred = auxil.predict_digit(model, device, img)
+            cv2.putText(result_img, str(pred), pos[i], cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv2.imshow("Result", result_img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
