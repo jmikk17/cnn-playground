@@ -86,11 +86,10 @@ def extract_digits(image_path: str, *, show_steps: bool = False, ada_thresh: boo
     if show_steps:
         # Plot original image with contours and example of first digit found transformed to MNIST format
         fig, ax = plt.subplots(1, 2, figsize=(12, 6))
-        ax[0].set_title("Detected Digits")
+        fig.suptitle("Detected digits and MNIST format example")
         ax[0].imshow(cv2.cvtColor(result_image, cv2.COLOR_BGR2RGB))
         ax[0].axis("off")
 
-        ax[1].set_title("MNIST format example")
         ax[1].imshow(digits[0], cmap="gray")
         ax[1].axis("off")
 
@@ -99,7 +98,7 @@ def extract_digits(image_path: str, *, show_steps: bool = False, ada_thresh: boo
     if show_steps:
         # Plot all found digits in MNIST format
         fig, ax = plt.subplots(1, len(digits), figsize=(12, 6))
-        fig.suptitle("Extracted Digits")
+        fig.suptitle("All extracted Digits")
         for i, digit in enumerate(digits):
             ax[i].imshow(digit, cmap="gray")
             ax[i].axis("off")
