@@ -20,6 +20,8 @@ def run_training(loss: str = "cross_entropy", epochs: int = 5) -> None:
     # For a general dataset mean and std should be calculated, but for MNIST they are known
     transform = transforms.Compose(
         [
+            transforms.RandomRotation(10),
+            transforms.RandomAffine(degrees=0, translate=(0.1, 0.1), scale=(0.9, 1.1)),
             transforms.ToTensor(),
             transforms.Normalize((0.1307,), (0.3081,)),
         ],

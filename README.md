@@ -29,3 +29,4 @@ python main.py --train
 - The trained model is saved as `mnist_cnn_state_dict.pth` and can be used for predictions.
 - OpenCV is used to find digits in images for prediction, but this generally includes a lot of emperical values, so might need finetuning.
 - The model usually achieves 99% when testing on the (easy) MNIST data, but struggles with real life images for various reasons (work in progress).
+    * (20/3) added data augmentation for training, seems to help a lot

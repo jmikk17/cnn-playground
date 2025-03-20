@@ -8,7 +8,12 @@ import train
 
 
 def main() -> None:
-    """Train or run the CNN model."""
+    """Train or run the CNN model.
+
+    Todo:
+        * Add a more formal test set of real life imgs to evaluate the model
+
+    """
     parser = argparse.ArgumentParser(description="CNN for predicting numbers")
 
     group = parser.add_mutually_exclusive_group(required=True)
